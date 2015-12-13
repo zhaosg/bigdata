@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+    <!--节点黑名单列表文件，用于下线hadoop节点 -->
+    <property>
+        <name>dfs.hosts.exclude</name>
+        <value>/home/hadoop/hadoop/etc/hadoop/exclude</value>
+    </property>
+
+    <!--指定hdfs的block大小64M -->
+    <property>
+        <name>dfs.block.size</name>
+        <value>67108864</value>
+    </property>
+
+    <!--指定hdfs的nameservice为ns1，需要和core-site.xml中的保持一致 -->
+    <property>
+        <name>dfs.nameservices</name>
+        <value>gagcluster</value>
+    </property>
+
+    <!-- ns1下面有两个NameNode，分别是nn1，nn2 -->
+    <property>
+        <name>dfs.ha.namenodes.gagcluster</name>
+        <value>nn1,nn2</value>
+    </property>
+
+    <!-- nn1的RPC通信地址 -->
+    <property>
+        <name>dfs.namenode.rpc-address.gagcluster.nn1</name>
+        <value>hadoop001.xiazy.net:8020</value>
+    </property>
+
+    <!-- nn1的http通信地址 -->
+    <property>
+        <name>dfs.namenode.http-address.gagcluster.nn1</name>
+        <value>hadoop001.xiazy.net:50070</value>
+    </property>
+
+    <!-- nn2的RPC通信地址 -->
+    <property>
+        <name>dfs.namenode.rpc-address.gagcluster.nn2</name>
+        <value>hadoop002.xiazy.net:8020</value>
+    </property>
+
+    <!-- nn2的http通信地址 -->
+    <property>
+        <name>dfs.namenode.http-address.gagcluster.nn2</name>
+        <value>hadoop002.xiazy.net:50070</value>
+    </property>
+
+    <!-- 指定NameNode的元数据在JournalNode上的存放位置 -->
+    <property>
+        <name>dfs.namenode.shared.edits.dir</name>
+        <value>qjournal://hadoop001.xiazy.net:8485;hadoop002.xiazy.net:8485;hadoop003.xiazy.net:8485/gagcluster</value>
+    </property>
+
+    <!-- 配置失败自动切换实现方式 -->
+    <property>
+        <name>dfs.client.failover.proxy.provider.gagcluster</name>
+        <value>org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider</value>
+    </property>
+
+    <!-- 配置隔离机制 -->
+    <property>
+        <name>dfs.ha.fencing.methods</name>
+        <value>sshfence</value>
+    </property>
+
+    <!-- 使用隔离机制时需要ssh免密码登陆 -->
+    <property>
+        <name>dfs.ha.fencing.ssh.private-key-files</name>
+        <value>/home/hadoop/.ssh/id_rsa</value>
+    </property>
+
+    <!-- 指定NameNode的元数据在JournalNode上的存放位置 -->
+    <property>
+        <name>dfs.journalnode.edits.dir</name>
+        <value>/home/hadoop/storage/hadoop/journal</value>
+    </property>
+
+    <!--指定支持高可用自动切换机制-->
+    <property>
+        <name>dfs.ha.automatic-failover.enabled</name>
+        <value>true</value>
+    </property>
+
+    <!--指定namenode名称空间的存储地址-->
+    <property>
+        <name>dfs.namenode.name.dir</name>
+        <value>/home/hadoop/storage/hadoop/name</value>
+    </property>
+
+    <!--指定datanode数据存储地址-->
+    <property>
+        <name>dfs.datanode.data.dir</name>
+        <value>file:/home/hadoop/storage/hadoop/data</value>
+    </property>
+
+    <!--指定数据冗余份数-->
+    <property>
+        <name>dfs.replication</name>
+        <value>3</value>
+    </property>
+
+    <!--指定可以通过web访问hdfs目录-->
+    <property>
+        <name>dfs.webhdfs.enabled</name>
+        <value>true</value>
+    </property>
+
+    <!--保证数据恢复 -->
+    <property>
+        <name>dfs.journalnode.http-address</name>
+        <value>0.0.0.0:8480</value>
+    </property>
+
+    <property>
+        <name>dfs.journalnode.rpc-address</name>
+        <value>0.0.0.0:8485</value>
+    </property>
+
+    <property>
+        <name>ha.zookeeper.quorum</name>
+        <value>hadoop001.xiazy.net:2181,hadoop002.xiazy.net:2181,hadoop003.xiazy.net:2181</value>
+    </property>
+</configuration>

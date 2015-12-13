@@ -1,0 +1,182 @@
+64位os下为啥要编译hadoop就不解释了,百度一下就能知道原因,下面是步骤:
+
+前提:编译源码所在的机器,必须能上网,否则建议不要尝试了
+
+ 
+
+一. 下载必要的组件
+
+a) 下载hadoop源码 (当前最新的稳定版是2.6.0)
+地址  http://mirrors.hust.edu.cn/apache/hadoop/common/stable/hadoop-2.6.0-src.tar.gz 
+b) 下载apache-ant (centos自带的ant版本太低，编译过程中会报错)
+地址： http://mirrors.cnnic.cn/apache//ant/binaries/apache-ant-1.9.4-bin.zip (最新版本即可)
+c) 下载protobuf-2.5.0.tar.gz (这是google出品的一个数据传输格式)
+地址： https://developers.google.com/protocol-buffers/docs/downloads （官网地址要翻!墙!，百度上也能找到国内下载地址）
+注意：hadoop2.6.0必须配protobuf 2.5.0版本，版本不匹配，编译将失败
+d) 下载findbugs
+地址： http://prdownloads.sourceforge.net/findbugs/findbugs-3.0.1.tar.gz?download (最新版本即可)
+e) 下载maven
+地址： http://maven.apache.org/download.cgi (下载最新版即可，本文中用的是3.2.5)
+f) 下载jdk
+地址：这个比较容易找，大家自己去oracle官网找着，jdk1.6 及以上（本文用的是1.7）
+
+ 
+
+二. 设置环境变量
+
+(下面三种方式任选其一即可)
+sudo vi /etc/profile 
+vi ~/.bashrc
+vi ~/.bash_profile
+上面3个命令随便用哪个，进入vi编辑器后，参考下面的内容设置环境变量：
+
+(注: 下面的$ JAVA _ HOME部分,博客发表后,好象博客园会自动变成其它格式,正确内容参考图片)
+export ANT_HOME=/home/cargo/apache-ant-1.9.4
+export FINDBUGS_HOME=/home/cargo/findbugs-3.0.1
+export JAVA_HOME=/home/cargo/jdk1.7.0_76
+export M2_HOME=/home/cargo/apache-maven-3.2.5
+export PATH=JAVAHOME/bin:PATH:HOME/bin:M2_HOME/bin:ANTHOME/bin:FINDBUGS_HOME/bin
+export CLASSPATH=.:JAVAHOME/lib/dt.jar:JAVA_HOME/lib/tools.jar
+
+
+
+编译过程中，maven会从互联网下载很多jar包，强烈建议在局域网搭建一个nexus私服, 另外建议修改maven/conf/settings.xml文件,参考内容如下:
+
+ View Code
+<localRepository>/home/cargo/m2</localRepository> 这里设置一个下载jar包的本机仓库目录，通常编译不会很顺利，如果因网络问题下载jar包失败，下次再运行安装时, 需要手动清空本地仓库的缓存，指定一个好记的目录，清理起来比较方便
+
+上面这一堆弄好后，验证一下:
+验证ant，输入anv -version，正常应该反馈以下类似信息：
+Apache Ant(TM) version 1.9.4 compiled on April 29 2014
+
+验证maven，输入mvn -version，正常应该反馈以下类似信息：
+Apache Maven 3.2.5 (12a6b3acb947671f09b81f49094c53f426d8cea1; 2014-12-15T01:29:23+08:00)
+Maven home: /home/cargo/apache-maven-3.2.5
+Java version: 1.7.0_76, vendor: Oracle Corporation
+Java home: /home/cargo/jdk1.7.0_76/jre
+Default locale: zh_CN, platform encoding: UTF-8
+OS name: "linux", version: "2.6.32-431.23.3.el6.x86_64", arch: "amd64", family: "unix"
+
+ 
+
+三.安装必要的软件
+
+sudo yum -y install gcc*
+sudo yum -y install cmake
+sudo yum -y install glibc-headers
+sudo yum -y install gcc-c++
+sudo yum -y install zip-devel
+sudo yum -y install openssl-devel
+sudo yum -y install svn
+sudo yum -y install git
+sudo yum -y install ncurses-devel 
+sudo yum -y install lzo-devel
+sudo yum -y install autoconf
+sudo yum -y install libtool
+sudo yum -y install automake
+
+这一堆东西都装上吧,省得编译过程中提示少这个,少那个
+
+ 
+
+四.配置\安装protobuf
+
+进入protobuf所在目录，然后按下面顺序操作
+./configure
+make 
+make check
+sudo make install
+
+ 
+
+五.编译hadoop
+
+进入hadoop源代码目录，输入
+mvn clean package -DskipTests -Pdist,native -Dtar
+
+上面这行命令大意是先清理target目录,再打包,同时跳过测试,应用dist,native这2种profile,且最终目标是生成tar包
+
+首次编译一般不会成功(视人品而定)，下面是可能会遇到的一些问题：
+
+a) maven-enforcer-plugin规则验证失败
+
+编辑源代码根目录下的pom.xml,找到maven-enforcer-plugin所在的部分
+
+<plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-enforcer-plugin</artifactId>
+          <version>1.3.1</version>
+          <configuration>
+            <rules>
+              <requireMavenVersion>
+                <version>[3.0.2,)</version>
+              </requireMavenVersion>
+              <requireJavaVersion>
+                <version>1.7</version>
+              </requireJavaVersion>
+            </rules>
+          </configuration>
+ </plugin>
+
+注意红色部分,原来的值是1.6,即规定了使用jdk1.6,如果本机安装的jdk是1.7,这里相应改一下
+b)maven-antrun-plugin各种报错
+
+同样尝试修改pom.xml
+
+ <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <version>1.7</version>
+        <dependencies>
+            <dependency>
+                  <groupId>org.codehaus.plexus</groupId>
+                  <artifactId>plexus-utils</artifactId>
+                  <version>2.0.5</version>
+              </dependency>
+              <dependency>
+                    <groupId>org.apache.ant</groupId>
+                     <artifactId>ant</artifactId>
+                     <version>1.9.4</version>
+                </dependency>
+        </dependencies>
+ </plugin>
+
+红色这一部分是原来没有的,可以尝试加上再试试,其中ant依赖项的版本号,调整成本机实际的ant版本号
+
+
+c) org.slf4j系列jar包找不到的问题
+hadoop所依赖的org.slf4j这一系列的Jar包版本都特别低，如果maven无法自动从互联网下载成功，可以手动根据出错信息，到网上下载这些jar包，然后放到本地仓库的相关目录
+
+
+d) apache-tomcat-6.0.41.tar.gz 下载太卡的问题
+ [get] Getting:  http://archive.apache.org/dist/tomcat/tomcat-6/v6.0.41/bin/apache-tomcat-6.0.41.tar.gz 
+ [get] To: /home/cargo/hadoop-2.6.0-src/hadoop-common-project/hadoop-kms/downloads/apache-tomcat-6.0.41.tar.gz
+到这一步时，如果下载失败，可以手动下载这个包，然后放到 hadoop-2.6.0-src/hadoop-common-project/hadoop-kms/downloads/ 目录下
+
+ 
+
+e)内存不足
+
+export MAVEN_OPTS="Xms256m -Xmx512m"
+
+把这一行加到最开始设置环境变量的文件最后即可
+
+ 
+
+tips: 如果人品不好,上面这些招数用尽后,仍然各种报错,可以尝试把maven命令调整成
+
+mvn compile -DskipTests -Pdist,native -Dtar
+
+即先不打包,仅编译
+
+ 
+
+在编译的漫长等待中,强烈建议大家读一下源代码目录下的BUILDING.TXT文件,这里面大概描述了各种平台(MAC OS/WINDOWS/LINUX)下的编译主要步骤,祝各位编译顺利!
+
+历经千辛万苦编译成功后,hadoop-2.6.0-src/hadoop-dist/target 这个目录下会生成编译结果
+
+ 
+
+作者：菩提树下的杨过
+出处：http://yjmyzz.cnblogs.com 
+本文版权归作者和博客园共有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文连接，否则保留追究法律责任的权利。

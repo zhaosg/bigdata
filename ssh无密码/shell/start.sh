@@ -5,7 +5,7 @@ filepath=$(cd "$(dirname "$0")"; pwd)
 echo $filepath
 source $filepath/dist/funs.sh
 source $filepath/dist/env.sh
-HOSTS=`cat $SUB_TASK_DIR/hosts.conf`
+HOSTS=`cat $SUB_TASK_DIR/hosts`
 
 chmod 700 $CLIENT_START_SCRIPT
 chmod 700 $CLIENT_SCRIPT

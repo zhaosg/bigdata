@@ -5,7 +5,7 @@ filepath=$(cd "$(dirname "$0")"; pwd)
 source $filepath/env.sh
 source $filepath/funs.sh
 hostname=`cat /etc/hostname`
-HOSTS=`cat $SUB_TASK_DIR/hosts.conf`
+HOSTS=`cat $SUB_TASK_DIR/hosts`
 RESET_KEYS_FILE=0
 for arg in "$@"
 do
