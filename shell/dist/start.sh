@@ -1,9 +1,9 @@
 #!/bin/bash
-
 # 加载配置文件
 echo "------------------加载配置文件-----------------------------------"
 filepath=$(cd "$(dirname "$0")"; pwd)
 source $filepath/env.inf
+source $filepath/funs.sh
 hostname=`cat /etc/hostname`
 RESET_KEYS_FILE=0
 for arg in "$@"
@@ -31,15 +31,7 @@ for host in $HOSTS
 do
 	if [ $host != $hostname ];then
 		echo "复制公钥文件到$host:$filepath/key.pub"
-		expect -c "
-			set timeout $CMD_TIMEOUT;
-			spawn scp $RSA_PUB "$USER@$host:$filepath/key.pub"
-			expect {
-				yes/no { send \"yes\r\"; exp_continue }
-				*assword* { send -- $PASSWD\r }
-			}
-			expect	eof	
-		"
+		copyFile2RemoteHost $USER $host $PASSWD $RSA_PUB $filepath/key.pub
 	fi
 done
 # 执行需要在各个主机的脚本任务
@@ -48,24 +40,8 @@ for host in $HOSTS
 do
 	if [ $host != $hostname ];then
 		if [ "$RESET_KEYS_FILE" == "1" ];then
-			expect -c "
-				set timeout $CMD_TIMEOUT
-				spawn  ssh -q $USER@$host $CLIENT_CLEAR_SCRIPT
-				expect {
-					yes/no { send \"yes\r\"; exp_continue }
-					*assword* { send -- $PASSWD\r }
-				}
-				expect	eof	
-			"
+			invokeRemoteHostCommand $USER $host $PASSWD $CLIENT_CLEAR_SCRIPT
 		fi
-		expect -c "
-			set timeout $CMD_TIMEOUT
-			spawn  ssh -q $USER@$host $CLIENT_SCRIPT
-			expect {
-				yes/no { send \"yes\r\"; exp_continue }
-				*assword* { send -- $PASSWD\r }
-			}
-			expect	eof	
-		"
+		invokeRemoteHostCommand $USER $host $PASSWD $CLIENT_SCRIPT
 	fi
 done
