@@ -1,10 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # 加载配置文件
 echo "------------------加载配置文件-----------------------------------"
 filepath=$(cd "$(dirname "$0")"; pwd)
-source $filepath/env.inf
+source $filepath/env.sh
 source $filepath/funs.sh
 hostname=`cat /etc/hostname`
+HOSTS=`cat $SUB_TASK_DIR/hosts.conf`
 RESET_KEYS_FILE=0
 for arg in "$@"
 do

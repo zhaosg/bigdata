@@ -1,10 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # 加载配置文件，并转换为变量
 filepath=$(cd "$(dirname "$0")"; pwd)
 echo $filepath
 source $filepath/dist/funs.sh
-source $filepath/dist/env.inf
+source $filepath/dist/env.sh
+HOSTS=`cat $SUB_TASK_DIR/hosts.conf`
 
 chmod 700 $CLIENT_START_SCRIPT
 chmod 700 $CLIENT_SCRIPT

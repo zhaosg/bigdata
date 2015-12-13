@@ -1,7 +1,7 @@
+#!/usr/bin/env bash
 USER=zhaosg
-PASSWD=
+PASSWD=mima0704
 SUB_TASK_DIR="/home/$USER/shell/dist"
-HOSTS=`cat $SUB_TASK_DIR/hosts.inf`
 CLIENT_SCRIPT="$SUB_TASK_DIR/client.sh"
 CLIENT_START_SCRIPT="$SUB_TASK_DIR/start.sh"
 CLIENT_CLEAR_SCRIPT="$SUB_TASK_DIR/clear.sh"
