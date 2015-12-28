@@ -1,16 +1,16 @@
-ZooKeeper安装配置
-下载：
+# ZooKeeper安装配置
+## 下载：
 
 wget http://archive.apache.org/dist/zookeeper/stable/zookeeper-3.4.6.tar.gz
-解压与软链接：
+## 解压与软链接：
 
 tar -zxvf zookeeper-3.4.6.tar.gz -C /opt
 ln -s /opt/zookeeper-3.4.6 /opt/zookeeper
 chown -R zookeeper:hadoop /opt/zookeeper*
-复制配置文件
+## 复制配置文件
 
 cp /opt/zookeeper/zoo_sample.cfg /opt/zookeeper/zoo.cfg
-修改配置
+## 修改配置
 
 vi /opt/zookeeper/zoo.cfg
 
@@ -45,7 +45,7 @@ server.3=HDP247:2888:3888
 
 　　server.A=B：C：D：其中A 是一个数字，表示这个是第几号服务器；B 是这个服务器的 ip 地址；C 表示的是这个服务器与集群中的 Leader 服务器交换信息的端口；D 表示的是万一集群中的 Leader 服务器挂了，需要一个端口来重新进行选举，选出一个新的 Leader，而这个端口就是用来执行选举时服务器相互通信的端口。如果是伪集群的配置方式，由于 B 都是一样，所以不同的 Zookeeper 实例通信端口号不能一样，所以要给它们分配不同的端口号。
 
-启动与停止
+## 启动与停止
 
 启动：
 
