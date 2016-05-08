@@ -7,6 +7,22 @@
         <value>3</value>
     </property>
 
+    <property>
+        <name>dfs.datanode.data.dir</name>
+        <value>/opt/data/hadoop/data</value>
+    </property>
+
+    <property>
+        <name>dfs.namenode.name.dir</name>
+        <value>/opt/data/hadoop/name</value>
+    </property>
+
+    <property>
+        <name>dfs.namenode.handler.count</name>
+        <value>8</value>
+    </property>
+
+
     <!--使用federation时，使用了2个HDFS集群。这里抽象出两个NameService实际上就是给这2个HDFS集群起了个别名。名字可以随便起，相互不重复即可-->
     <property>
         <name>dfs.nameservices</name>
