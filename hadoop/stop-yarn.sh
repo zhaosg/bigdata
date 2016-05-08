@@ -4,7 +4,7 @@ source ${filepath}/env.sh
 local_files=${filepath}/etc/hadoop
 expect -c "
  set timeout 80
- spawn ssh -q ${user}@${namenode}  ${hadoop_home}/bin/hadoop namenode -format -force -clusterId cluster1
+ spawn ssh -q ${user}@${namenode}  ${hadoop_home}/sbin/stop-yarn.sh
  expect {
      yes/no { send \"yes\r\"; exp_continue }
      *password:* {send -- ${password}\r}

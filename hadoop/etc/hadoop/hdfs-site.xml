@@ -4,7 +4,7 @@
     <!--指定DataNode存储block的副本数量。默认值是3个，我们现在有4个DataNode，该值不大于4即可。-->
     <property>
         <name>dfs.replication</name>
-        <value>3</value>
+        <value>2</value>
     </property>
 
     <property>

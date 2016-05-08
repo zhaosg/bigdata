@@ -11,4 +11,3 @@ expect -c "
  }
  expect eof
 "
-
